@@ -1,4 +1,4 @@
-defmodule Main do
+defmodule Abc086A.Main do
   require Integer
 
   def main() do
