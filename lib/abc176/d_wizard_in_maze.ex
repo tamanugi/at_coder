@@ -23,17 +23,41 @@ defmodule Abc176D.Main do
     # スタート地点のコストは0
     costs = (for _ <- 1..h, _ <- 1..w, do: nil) |> List.update_at(mi.(start), fn _ -> 0 end)
 
-    # キュー
-    q = :queue.in(start, :queue.new())
+    # 歩いていけるところを探す
+    process2(start, costs, maze, mi, h, w)
 
-    process(q, costs, maze, mi, h, w)
-    |> Enum.at(mi.(goal))
-    |> output()
-    |> IO.puts
+    # ワープでいけるところを探す
+
   end
 
   def output(nil), do: -1
   def output(c), do: c
+
+  def process2(point, costs, maze, mi, h, w) do
+    c = Enum.at(costs, mi.(point))
+
+    # 歩いていけるところを探す
+    1..(length(maze))
+    |> Enum.reduce_while({[point], costs}, fn _, {[{i,j}|t], acc} ->
+
+      can_walk_point = [{-1, 0}, {1, 0}, {0, -1}, {0, 1}]
+      |> Enum.map(fn {y, x} -> {i + y, j + x} end)
+      |> Enum.filter(fn {y, x} -> y >= 0 and y < h and x >= 0 and x < w end)
+      |> Enum.filter(fn p -> Enum.at(maze, mi.(p)) == "." end)
+      |> Enum.filter(fn p -> Enum.at(acc, mi.(p)) > c end)
+
+      # コスト更新
+      acc = can_walk_point |> Enum.reduce(acc, fn p, acc -> List.update_at(acc, mi.(p), fn _ -> c end) end)
+      t = t ++ can_walk_point
+
+      case t do
+        [] -> {:halt, {[], acc}}
+        _ -> {:cont, {t, acc}}
+      end
+    end)
+    |> IO.inspect()
+
+  end
 
   def process({[], []}, costs, _, _, _, _), do: costs
   def process(q, costs, maze, mi, h, w) do
