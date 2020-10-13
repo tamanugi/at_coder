@@ -2,12 +2,28 @@ defmodule CamelBridge.Main do
   def main() do
     [n, m] = read_array()
     ws = read_array()
-    lvs = read_multi_array() |> Enum.sort_by( fn [_, v] -> v end)
+    lvs =
+      IO.read(:all)
+      |> String.split("\n")
+      |> Enum.filter(fn s -> String.length(s) > 0 end)
+      |> Enum.map(&(String.split(&1, " ") |> Enum.map(fn i -> String.to_integer(i) end)))
+      |> Enum.sort_by(fn [_, v] -> v end)
+      |> read_map(0, %{})
 
     # {:ok, ans} = start_link(1000_000_000)
 
     IO.inspect({n, m})
     IO.inspect(ws)
+    IO.inspect(lvs)
+
+    # LVSのlを調整する
+    lvs = 1..(m-1)
+    |> Enum.reduce(lvs, fn i, acc ->
+      with [l1, _] <- acc[i - 1]
+      do
+        Map.update!(acc, i, fn [l, v] -> [max(l, l1), v] end)
+      end
+    end)
     IO.inspect(lvs)
 
     permutation(ws, n)
@@ -36,16 +52,22 @@ defmodule CamelBridge.Main do
     w = w + Enum.at(ws, j)
 
     # TODO: 二分探索
-    # k = Enum.find_index(lvs, fn [_, v] -> v >= w end) || m
-    k = m
+    k = lvs |> Map.values |>  Enum.find_index(fn [_, v] -> v >= w end) || m
+    IO.inspect(if k > 0, do: lvs[k - 1] |> List.first(), else: 0)
+    # k = m
 
     dsj = Map.get(ds, j, 0)
-    dsi = Map.get(ds, i, 0) + if k > 0, do: Enum.at(lvs, k - 1) |> List.first(), else: 0
+    dsi = Map.get(ds, i, 0) + if k > 0, do: lvs[k - 1] |> List.first(), else: 0
 
     ds = Map.put(ds, j, max(dsi, dsj))
     process2(w, ds, i, j + 1, ws, lvs, n, m)
   end
   def process2(_, ds, _, _, _, _, _, _), do: ds
+
+  def binary_search_vw(lvs, w, len) do
+    div(len, 2)
+
+  end
 
   def read_single() do
     IO.read(:line) |> String.trim() |> String.to_integer()
