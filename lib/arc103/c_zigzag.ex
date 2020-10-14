@@ -16,13 +16,19 @@ defmodule ZigZag.Main do
       _ ->
         {odd_acc, even_acc} = count(vs, 1, %{}, %{})
 
-        odd_acc |> Map.to_list() |> Enum.sort_by(fn {_, c} -> c end, :desc) |> Enum.take(2) |> IO.inspect()
-        even_acc |> Map.to_list() |> Enum.sort_by(fn {_, c} -> c end, :desc) |> Enum.take(2) |> IO.inspect()
+        os = odd_acc |> Map.to_list() |> Enum.sort_by(fn {_, c} -> c end, :desc) |> Enum.take(2)
+        es = even_acc |> Map.to_list() |> Enum.sort_by(fn {_, c} -> c end, :desc) |> Enum.take(2)
 
-        om = odd_acc |> Map.values() |> Enum.max()
-        em = even_acc |> Map.values() |> Enum.max()
+        {on, oc} = Enum.at(os, 0, {0, 0})
+        {en, ec} = Enum.at(es, 0, {0, 0})
 
-        n - om - em
+        cond do
+          on == en and oc == ec ->
+            {_, ooc} = Enum.at(os, 1, {0, 0})
+            {_, eec} = Enum.at(es, 1, {0, 0})
+            n - max(oc, ec) - max(ooc, eec)
+          on != en -> n - oc - ec
+        end
     end
   end
 
