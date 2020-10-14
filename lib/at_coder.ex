@@ -20,6 +20,13 @@ defmodule Helper do
     read_map(t, i + 1, acc)
   end
 
+  def read_multi_array() do
+    IO.read(:all)
+    |> String.split("\n")
+    |> Enum.filter(fn s -> String.length(s) > 0 end)
+    |> Enum.map(&(String.split(&1, " ") |> Enum.map(fn i -> String.to_integer(i) end)))
+  end
+
   def test() do
     n = 100000
     steps = (for _ <- 1..n, do: (1..300 |> Enum.random()) * 10 |> Integer.to_string) |> read_map(0, %{})
