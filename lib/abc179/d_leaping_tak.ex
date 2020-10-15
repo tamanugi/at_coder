@@ -3,33 +3,38 @@ defmodule LeapingTak.Main do
     [n, _] = read_array()
     lrs = read_multi_array()
 
-    # lrs_to_s(lrs, [])
     lrs
-    |> IO.inspect()
-    |> solve(n)
+    |> solve(n, 1, %{0 => 1, 1 => 1}, %{0 => 1, 1 => 1})
     |> IO.puts()
   end
 
-  def solve(s, n, i \\ 0, dp \\ %{0 => 1, 1 => -1})
+  def solve(lrs, n, i, dp, sdp) when i <= n do
+    # dp =
+    #   lrs
+    #   |> Enum.reduce(dp, fn [l, r], dp ->
+    #     ll = max(0, i - r)
+    #     rr = max(0, i - l + 1)
 
-  def solve(_, n, i, dp) when i == n - 1, do: rem(Map.get(dp, i, 0), 998244353)
-  def solve(lrs, n, i, dp) do
-    #
-    dp = if i > 0, do: Map.update!(dp, i, fn c -> c + dp[i - 1] end), else: dp
-    cur = dp[i] || 0
+    #     s =  Map.get(sdp, rr, 0) - Map.get(sdp, ll, 0)
+    #     Map.update(dp, i, s, fn c -> rem(c + s, 998244353) end)
+    #   end)
 
-    dp =
-      lrs
-      |> Enum.reduce(dp, fn [l, r], acc ->
-        IO.inspect({i + l, i + r})
+    dp = lrs |> lrs_loop(dp, sdp, i)
+    sdp = Map.put(sdp, i + 1, sdp[i] + dp[i])
 
-        acc = if i + l < n, do: Map.update(acc, i + l, cur, fn c -> c + cur end), else: dp
-        acc = if i + r < n, do: Map.update(acc, i + r, cur, fn c -> c - cur end), else: dp
-        acc
-      end)
-    # |> IO.inspect()
+    solve(lrs, n, i + 1, dp, sdp)
+  end
+  def solve(_, _, i, dp, _), do: Map.get(dp, i - 1, 0)
 
-    solve(lrs, n, i + 1, dp)
+  def lrs_loop([], dp, _, _), do: dp
+  def lrs_loop([[l, r] | t], dp, sdp, i) do
+
+    ll = max(0, i - r)
+    rr = max(0, i - l + 1)
+
+    s = Map.get(sdp, rr, 0) - Map.get(sdp, ll, 0)
+    dp = Map.update(dp, i, s, fn c -> rem(c + s, 998244353) end)
+    lrs_loop(t, dp, sdp, i)
   end
 
   def lrs_to_s([], s), do: s |> Enum.uniq() |> Enum.sort()
