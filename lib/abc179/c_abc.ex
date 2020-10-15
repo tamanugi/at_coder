@@ -1,4 +1,21 @@
-defmodule Helper do
+defmodule Abc.Main do
+  def main() do
+    n = read_single()
+
+    solve(n)
+    |> IO.puts()
+  end
+
+  def solve(n) do
+    solve(n, 1, div(n, 2), 0)
+  end
+
+  def solve(n, i, max, acc) when i <= max do
+    acc = acc + div(n - 1, i)
+    solve(n, i + 1, max, acc)
+  end
+  def solve(n, i, _, acc), do: acc + (n - i)
+
   def read_single() do
     IO.read(:line) |> String.trim() |> String.to_integer()
   end
@@ -28,9 +45,10 @@ defmodule Helper do
   end
 
   def test() do
-    n = 100000
-    steps = (for _ <- 1..n, do: (1..300 |> Enum.random()) * 10 |> Integer.to_string) |> read_map(0, %{})
-    {time, _} = :timer.tc(Main, :solve, [n, 100, steps])
+    n = 1000000
+    # steps = (for _ <- 1..n, do: (1..300 |> Enum.random()) * 10 |> Integer.to_string) |> read_map(0, %{})
+    {time, result} = :timer.tc(Abc.Main, :solve, [n])
+    IO.inspect(result)
     IO.inspect(time)
   end
 

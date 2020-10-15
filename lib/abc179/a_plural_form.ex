@@ -1,4 +1,15 @@
-defmodule Helper do
+defmodule PluralForm.Main do
+  def main() do
+    s = IO.read(:line) |> String.trim()
+
+    if String.ends_with?(s, "s") do
+      s <> "es"
+    else
+      s <> "s"
+    end
+    |> IO.puts()
+  end
+
   def read_single() do
     IO.read(:line) |> String.trim() |> String.to_integer()
   end
@@ -18,13 +29,6 @@ defmodule Helper do
   def read_map([h|t], i, acc) do
     acc = Map.put(acc, i, String.to_integer(h))
     read_map(t, i + 1, acc)
-  end
-
-  def read_multi_array() do
-    IO.read(:all)
-    |> String.split("\n")
-    |> Enum.filter(fn s -> String.length(s) > 0 end)
-    |> Enum.map(&(String.split(&1, " ") |> Enum.map(fn i -> String.to_integer(i) end)))
   end
 
   def test() do

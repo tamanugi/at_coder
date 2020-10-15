@@ -1,4 +1,16 @@
-defmodule Helper do
+defmodule GoToJail.Main do
+  def main() do
+    _ = read_single()
+    read_multi_array()
+    |> solve(0)
+    |> IO.puts()
+  end
+
+  def solve(_, 3), do: "Yes"
+  def solve([], _) , do: "No"
+  def solve([[d1, d2] | t], acc) when d1 == d2, do: solve(t, acc + 1)
+  def solve([_ | t], _), do: solve(t, 0)
+
   def read_single() do
     IO.read(:line) |> String.trim() |> String.to_integer()
   end
@@ -28,9 +40,11 @@ defmodule Helper do
   end
 
   def test() do
-    n = 100000
-    steps = (for _ <- 1..n, do: (1..300 |> Enum.random()) * 10 |> Integer.to_string) |> read_map(0, %{})
-    {time, _} = :timer.tc(Main, :solve, [n, 100, steps])
+    n = 10
+    steps = (for _ <- 1..n, do: [:rand.uniform * 2 |> floor, :rand.uniform * 3 |> floor])
+    IO.inspect(steps)
+    {time, result} = :timer.tc(GoToJail.Main, :solve, [steps, 0])
+    IO.inspect(result)
     IO.inspect(time)
   end
 
