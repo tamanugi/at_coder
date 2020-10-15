@@ -1,4 +1,6 @@
 defmodule LeapingTak.Main do
+  @mod 998244353
+
   def main() do
     [n, _] = read_array()
     lrs = read_multi_array()
@@ -9,39 +11,22 @@ defmodule LeapingTak.Main do
   end
 
   def solve(lrs, n, i, dp, sdp) when i <= n do
-    # dp =
-    #   lrs
-    #   |> Enum.reduce(dp, fn [l, r], dp ->
-    #     ll = max(0, i - r)
-    #     rr = max(0, i - l + 1)
+    dp =
+      Enum.reduce(lrs, dp, fn [l, r], dp ->
+        ll = max(0, i - r)
+        rr = max(0, i - l + 1)
 
-    #     s =  Map.get(sdp, rr, 0) - Map.get(sdp, ll, 0)
-    #     Map.update(dp, i, s, fn c -> rem(c + s, 998244353) end)
-    #   end)
+        s =  Map.get(sdp, rr, 0) - Map.get(sdp, ll, 0)
+        c = Map.get(dp, i, 0)
+        Map.put(dp, i, rem(c + s, @mod))
+      end)
 
-    dp = lrs |> lrs_loop(dp, sdp, i)
     sdp = Map.put(sdp, i + 1, sdp[i] + dp[i])
 
     solve(lrs, n, i + 1, dp, sdp)
   end
+
   def solve(_, _, i, dp, _), do: Map.get(dp, i - 1, 0)
-
-  def lrs_loop([], dp, _, _), do: dp
-  def lrs_loop([[l, r] | t], dp, sdp, i) do
-
-    ll = max(0, i - r)
-    rr = max(0, i - l + 1)
-
-    s = Map.get(sdp, rr, 0) - Map.get(sdp, ll, 0)
-    dp = Map.update(dp, i, s, fn c -> rem(c + s, 998244353) end)
-    lrs_loop(t, dp, sdp, i)
-  end
-
-  def lrs_to_s([], s), do: s |> Enum.uniq() |> Enum.sort()
-  def lrs_to_s([[l, r]| t], s) do
-    s = Enum.concat(l..r |> Enum.map(fn i -> i end), s)
-    lrs_to_s(t, s)
-  end
 
   def read_single() do
     IO.read(:line) |> String.trim() |> String.to_integer()
