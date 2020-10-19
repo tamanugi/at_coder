@@ -9,26 +9,34 @@ defmodule TravelingSalesman.Main do
        |> IO.inspect()
 
     # cost計算する
-    costs = cost(n, cities)
+    costs = cost(n, cities) |> IO.inspect()
 
     # 都市0 -> 都市iへの行き先を初期状態として持つ
     dp =
       1..(n - 1)
       |> Enum.reduce(%{}, fn i, acc ->
-        Map.put(acc,  i, %{1 <<< i => costs[{0, i}]})
+        Map.put(acc,  i, %{bit([0, i]) => costs[{0, i}]})
       end)
       |> IO.inspect()
 
-    1..(1 <<< n)
-    |> Enum.filter(fn i -> (i &&& 1) == 1 end)
+    1..((1 <<< n ) - 1)
+    |> Enum.filter(fn s -> (s &&& 1) == 1 end)
     |> Enum.reduce(dp, fn s, dp ->
-      1..(n - 1)
-      |> Enum.filter(fn j -> (s &&& j) end)
-      |> Enum.reduce(dp, fn j, dp ->
-        IO.inspect({s |> Integer.digits(2), j})
-        dp
+      0..(n - 1)
+      |> Enum.filter(fn i -> (s &&& (1 <<< i)) == 1 end)
+      |> Enum.reduce(dp, fn i, dp ->
+
+        0..(n - 1)
+        |> Enum.filter(fn j -> i != j end)
+        |> Enum.reduce(dp, fn j, dp ->
+          cost = costs[{i, j}]
+          key = s ||| (1 <<< j)
+          IO.inspect(key, label: "s=#{s} i=#{i} j=#{j}")
+          Map.update(dp, i, %{key => cost}, fn m -> Map.update(m, key, cost, fn cc -> min(cc, cost) end) end)
+        end)
       end)
     end)
+    |> IO.inspect()
   end
 
   def solve() do
