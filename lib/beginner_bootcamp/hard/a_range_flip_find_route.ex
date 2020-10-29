@@ -1,4 +1,5 @@
 defmodule RangeFlipFindRoute.Main do
+  @inf 1000_000
 
   def read_array() do
     IO.read(:line) |> String.trim() |> String.split(" ") |> Enum.map(&String.to_integer/1)
@@ -21,63 +22,35 @@ defmodule RangeFlipFindRoute.Main do
       |> Enum.flat_map(&split_and_filter/1)
 
     # スタート位置のコスト
-    costs = (for i <- 1..(h * w)-1, into: %{}, do: {i, 1000_000})
     init_cost = if Enum.at(cell, 0) == "#", do: 1, else: 0
-    costs = Map.put(costs, 0, init_cost)
+    dp = Map.put(%{}, 0, init_cost)
 
-    q = :queue.in(0, :queue.new)
-
-    solve(q, costs, cell, h * w, w)
+    solve(cell, dp, 1, w, h * w)
     |> IO.puts()
   end
 
-  def solve({[], []}, costs, _, size, _), do: Map.get(costs, size - 1)
-  def solve(q, costs, cell, size, w) do
-    # キューから取り出す
-    {{:value, p}, q} = :queue.out(q)
-
-    # 現在位置のコスト
-    c = costs[p]
-
-    # 右と下を確認する
-    # 右
-    {q, costs} =
-      if rem(p + 1, w) != 0 do
-        check(Enum.at(cell, p + 1), p + 1, q, costs, c)
-      else
-        # 右端の場合
-        {q, costs}
+  def solve(_, dp, i, _, size) when i == size, do: dp[size - 1]
+  def solve(cell, dp, i, w, size) do
+    # 上から来た場合
+    v1 =
+      case i - w do
+        ii when ii >= 0 ->
+          Map.get(dp, i - w) + if Enum.at(cell, i - w) == "." and Enum.at(cell, i) == "#", do: 1, else: 0
+        _ -> @inf
       end
 
-    # 下
-    {q, costs} =
-      if p + w < size do
-        check(Enum.at(cell, p + w), p + w, q, costs, c)
-      else
-        # 下の場合
-        {q, costs}
+    # 左から来た場合
+    v2 =
+      case i - 1 do
+        _ when rem(i, w) == 0 -> @inf
+        ii ->
+          Map.get(dp, ii) + if Enum.at(cell, ii) == "." and Enum.at(cell, i) == "#", do: 1, else: 0
       end
 
-    solve(q, costs, cell, size, w)
+    dp =  Map.put(dp, i, min(v1, v2))
+
+    solve(cell, dp, i + 1, w, size)
   end
 
-  def check(".", p, q, costs, c) do
-    cost = costs[p]
-    if cost > c do
-      costs = Map.put(costs, p, c)
-      {:queue.in_r(p, q), costs}
-    else
-      {q, costs}
-    end
-  end
-  def check("#", p, q, costs, c) do
-    cost = costs[p]
-    if cost > c + 1 do
-      costs = Map.put(costs, p, c + 1)
-      {:queue.in(p, q), costs}
-    else
-      {q, costs}
-    end
-  end
 
 end
