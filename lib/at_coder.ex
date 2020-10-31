@@ -27,6 +27,18 @@ defmodule Helper do
     |> Enum.map(&(String.split(&1, " ") |> Enum.map(fn i -> String.to_integer(i) end)))
   end
 
+  def pow(_, 0), do: 1
+  def pow(m, 2), do: m * m
+  def pow(m, n) do
+    case div_and_rem(n, 2) do
+      {a, 0} -> pow(m, a) |> pow(2)
+      {a, 1} -> (pow(m, a) |> pow(2)) * m
+    end
+  end
+  def div_and_rem(m, n) do
+    {div(m, n), rem(m, n)}
+  end
+
   def test() do
     n = 100000
     steps = (for _ <- 1..n, do: (1..300 |> Enum.random()) * 10 |> Integer.to_string) |> read_map(0, %{})
