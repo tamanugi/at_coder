@@ -39,6 +39,19 @@ defmodule Helper do
     {div(m, n), rem(m, n)}
   end
 
+  def combination(_, 0), do: [[]]
+  def combination([], _), do: []
+
+  def combination([x | xs], n) do
+    for(y <- combination(xs, n - 1), do: [x | y]) ++ combination(xs, n)
+  end
+
+  def permutation(_, 0), do: [[]]
+
+  def permutation(list, n) do
+    for x <- list, rest <- permutation(list -- [x], n - 1), do: [x | rest]
+  end
+
   def test() do
     n = 100000
     steps = (for _ <- 1..n, do: (1..300 |> Enum.random()) * 10 |> Integer.to_string) |> read_map(0, %{})
