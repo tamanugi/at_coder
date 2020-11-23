@@ -1,6 +1,6 @@
 defmodule Bouquet.Main do
 
-  @mod 1000_000_000 + 9
+  @mod 1000_000_000 + 7
 
   def read_array() do
     IO.read(:line) |> String.trim() |> String.split(" ") |> Enum.map(&String.to_integer/1)
@@ -12,10 +12,9 @@ defmodule Bouquet.Main do
     # 総数
     total = pow(2, n) - 1
 
-    IO.inspect({total, combi(n, a), combi(n, b)})
-
     # 総数 - nCa - nCb
     (total - combi(n, a) - combi(n, b))
+    |> mod(@mod)
     |> IO.puts()
 
   end
@@ -33,6 +32,7 @@ defmodule Bouquet.Main do
       {a, 0} -> pow(m, a) |> pow(2)
       {a, 1} -> (pow(m, a) |> pow(2)) * m
     end
+    |> rem(@mod)
   end
   def div_and_rem(m, n) do
     {div(m, n), rem(m, n)}
@@ -40,8 +40,12 @@ defmodule Bouquet.Main do
 
   def fac(n), do: fac(n, n, 1)
   def fac(n, i), do: fac(n, i, 1)
-	defp fac(0, _, current_factorial), do: current_factorial
-	defp fac(_, 0, current_factorial), do: current_factorial
-	defp fac(n, i, current_factorial) when n > 0, do: fac(n - 1, i - 1, rem(current_factorial * n, @mod))
+	defp fac(0, _, cur), do: cur
+	defp fac(_, 0, cur), do: cur
+  defp fac(n, i, cur) when n > 0, do: fac(n - 1, i - 1, rem(cur * n, @mod))
+
+  def mod(x, y) when x > 0, do: rem(x, y)
+  def mod(x, y) when x < 0, do: mod(y + x, y)
+  def mod(0, _), do: 0
 
 end
