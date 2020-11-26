@@ -7,11 +7,14 @@ defmodule RedAndGreenApples.Main do
   def main() do
     [x, y, _a, _b, _c] = read_array()
 
-    red = read_array() |> Enum.sort(:desc) |> Enum.take(x) |> Enum.sort()
-    green = read_array() |> Enum.sort(:desc) |> Enum.take(y) |> Enum.sort()
-    white = read_array() |> Enum.sort(:desc)
+    red = read_array() |> Enum.sort(:desc) |> Enum.take(x)
+    green = read_array() |> Enum.sort(:desc) |> Enum.take(y)
+    white = read_array()
 
-    solve(red, green, white)
+    (red ++ green ++ white)
+    |> Enum.sort(:desc)
+    |> Enum.take(x + y)
+    |> Enum.sum()
     |> IO.puts()
   end
 
