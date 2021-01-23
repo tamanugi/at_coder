@@ -1,0 +1,8 @@
+- name: sample1
+  in: |
+    1
+    
+  out: |
+    1
+    AB
+    
