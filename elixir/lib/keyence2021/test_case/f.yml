@@ -1,0 +1,26 @@
+- name: sample1
+  in: |
+    2
+    key
+    
+  out: |
+    6
+    
+
+- name: sample2
+  in: |
+    2
+    ccc
+    
+  out: |
+    0
+    
+
+- name: sample3
+  in: |
+    100
+    keyneeneeeckyycccckkke
+    
+  out: |
+    275429980
+    
