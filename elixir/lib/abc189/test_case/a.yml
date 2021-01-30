@@ -1,0 +1,15 @@
+- name: sample1
+  in: |
+    SSS
+    
+  out: |
+    Won
+    
+
+- name: sample2
+  in: |
+    WVW
+    
+  out: |
+    Lost
+    

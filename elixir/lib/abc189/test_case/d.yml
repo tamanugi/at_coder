@@ -1,0 +1,34 @@
+- name: sample1
+  in: |
+    2
+    AND
+    OR
+    
+  out: |
+    5
+    
+
+- name: sample2
+  in: |
+    5
+    OR
+    OR
+    OR
+    OR
+    OR
+    
+  out: |
+    63
+    
+- name: sample3
+  in: |
+    5
+    OR
+    OR
+    AND
+    OR
+    OR
+    
+  out: |
+    55
+    
