@@ -1,0 +1,32 @@
+- name: sample1
+  in: |
+    dIfFiCuLt
+    
+  out: |
+    Yes
+    
+
+- name: sample2
+  in: |
+    eASY
+    
+  out: |
+    No
+    
+
+- name: sample3
+  in: |
+    a
+    
+  out: |
+    Yes
+
+- name: sample4
+  in: |
+    A
+    
+  out: |
+    No
+    
+
+    
