@@ -39,6 +39,16 @@ defmodule Helper do
     {div(m, n), rem(m, n)}
   end
 
+  def mod_pow(_, 0, _), do: 1
+  def mod_pow(m, 2, r), do: (m * m) |> rem(r)
+  def mod_pow(m, n, r) do
+    case {div(n, 2), rem(n, 2)} do
+      {a, 0} -> mod_pow(m, a, r) |> mod_pow(2, r)
+      {a, 1} -> (mod_pow(m, a, r) |> mod_pow(2, r)) * m
+    end
+    |> rem(r)
+  end
+
   def combination(_, 0), do: [[]]
   def combination([], _), do: []
 
