@@ -14,19 +14,45 @@ defmodule Abc192.D.Main do
     x = read_s()
     m = read_single()
 
-    arr = x |> String.codepoints() |> Enum.map(&String.to_integer/1)
-
-    d = arr |> Enum.max()
-
-    solve(arr, d + 1, m, 0)
+    unless String.length(x) == 1 do
+      process(x, m)
+    else
+      if String.to_integer(x) <= m, do: 1, else: 0
+    end
     |> IO.puts()
+
   end
 
-  def solve(x, d, m, acc) do
-    if Integer.undigits(x, d) > m do
+  def process(x, m) do
+
+    arr = x |> String.codepoints() |> Enum.map(&String.to_integer/1)
+    d = arr |> Enum.max()
+
+    # 桁数
+    ddd = arr |> length()
+
+    # 先頭の数字
+    first = arr |> List.first()
+
+    # Mに近いn進数の候補
+    candinate =
+      :math.pow(div(m, first), 1 / max(ddd - 1, 1))
+      |> floor()
+
+    candinate = max(candinate - 5, d + 1)
+
+    if candinate > d do
+      solve(arr, d, m, candinate, candinate - d - 1)
+    else
+      0
+    end
+  end
+
+  def solve(x, d, m, n, acc) do
+    if Integer.undigits(x, n) > m do
       acc
     else
-      solve(x, d + 1, m, acc + 1)
+      solve(x, d, m, n + 1, acc + 1)
     end
   end
 
