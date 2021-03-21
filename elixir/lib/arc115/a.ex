@@ -14,33 +14,31 @@ defmodule Arc115.A.Main do
   end
 
   def main() do
-    [n, m] = read_array()
+    [_n, m] = read_array()
 
     s = read_multi()
 
-    solve(s, 0)
+    solve(s, m)
     |> IO.puts()
   end
 
-  def solve([], acc), do: acc
-  def solve([h | t], acc) do
+  def solve(s, m) do
 
-    h_codepoints = String.codepoints(h)
+    zeros = for _ <- 1..m, do: "0"
 
-    acc =
-      t
-      |> Enum.reduce(0, fn s, count ->
-        Enum.zip(h_codepoints, String.codepoints(s))
-        |> Enum.count(fn {a, b} -> a != b end)
-        |> rem(2)
-        |> (fn
-          0 -> count
-          1 -> count + 1
-        end).()
-      end)
-      |> Kernel.+(acc)
-
-      solve(t, acc)
+    s
+    |> Enum.map(fn s ->
+      String.codepoints(s)
+      |> Enum.zip(zeros)
+      |> Enum.count(fn {a, b} -> a != b end)
+    end)
+    |> Enum.reduce({0, 0}, fn i, {a, b} ->
+      case rem(i, 2) do
+        0 -> {a + 1, b}
+        1 -> {a, b + 1}
+      end
+    end)
+    |> (fn {a, b} -> a * b end).()
   end
 
   def test() do
